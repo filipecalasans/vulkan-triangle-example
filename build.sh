@@ -8,4 +8,4 @@ mkdir -p "${BUILD_DIR}"
 CMAKE_FLAGS=()
 
 "${SCRIPT_DIR}/build_shaders_macos.sh"
-(cd "${BUILD_DIR}" && cmake "CMAKE_FLAGS[@]" ../ -G "Ninja" && ninja -j3)
+(cd "${BUILD_DIR}" && cmake "${CMAKE_FLAGS[@]}" ../ -G "Ninja" && ninja -j3)

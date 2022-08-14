@@ -4,7 +4,11 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 BUILD_DIR="${SCRIPT_DIR}/build"
 
-VULKAN_ROOT="${HOME}/VulkanSDK/1.3.204.0/"
+if [[ -z "${VULKAN_VERSION}" ]]; then
+    VULKAN_VERSION="1.3.204.0"
+fi
+
+VULKAN_ROOT="${HOME}/VulkanSDK/${VULKAN_VERSION}/"
 GLSLC="${VULKAN_ROOT}/macOS/bin/glslc"
 
 mkdir -p "${BUILD_DIR}/shaders"
