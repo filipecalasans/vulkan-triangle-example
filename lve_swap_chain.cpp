@@ -22,9 +22,6 @@ LveSwapChain::LveSwapChain(LveDevice &deviceRef, VkExtent2D extent)
 }
 
 LveSwapChain::~LveSwapChain() {
-
-  vkDestroyRenderPass(device.device(), renderPass, nullptr);
-  
   for (auto imageView : swapChainImageViews) {
     vkDestroyImageView(device.device(), imageView, nullptr);
   }
@@ -44,6 +41,8 @@ LveSwapChain::~LveSwapChain() {
   for (auto framebuffer : swapChainFramebuffers) {
     vkDestroyFramebuffer(device.device(), framebuffer, nullptr);
   }
+
+  vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
   // cleanup synchronization objects
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -245,12 +244,12 @@ void LveSwapChain::createRenderPass() {
   dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
   dependency.srcAccessMask = 0;
   dependency.srcStageMask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   dependency.dstSubpass = 0;
   dependency.dstStageMask =
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
   dependency.dstAccessMask =
-      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
   std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
   VkRenderPassCreateInfo renderPassInfo = {};
@@ -379,8 +378,8 @@ VkSurfaceFormatKHR LveSwapChain::chooseSwapSurfaceFormat(
 VkPresentModeKHR LveSwapChain::chooseSwapPresentMode(
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
   for (const auto &availablePresentMode : availablePresentModes) {
-    if (availablePresentMode == VK_PRESENT_MODE_FIFO_KHR) {
-    // if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+    // if (availablePresentMode == VK_PRESENT_MODE_FIFO_KHR) {
+    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
       std::cout << "Present mode: Mailbox" << std::endl;
       return availablePresentMode;
     }

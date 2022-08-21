@@ -61,25 +61,26 @@ void LvePipeline::createGraphicsPipeline(
   createShaderModule(vertCode, &vertShaderModule);
   createShaderModule(fragCode, &fragShaderModule);
 
-  VkPipelineShaderStageCreateInfo shaderStages[] = {
-    {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_VERTEX_BIT,
-      .module = vertShaderModule,
-      .pName = "main",
-      .flags = 0,
-      .pNext = nullptr,
-      .pSpecializationInfo = nullptr,
-    },
-    {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-      .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-      .module = fragShaderModule,
-      .pName = "main",
-      .flags = 0,
-      .pNext = nullptr,
-      .pSpecializationInfo = nullptr,
-    },
+  VkPipelineShaderStageCreateInfo shaderStages[2];
+
+  shaderStages[0] = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    .stage = VK_SHADER_STAGE_VERTEX_BIT,
+    .module = vertShaderModule,
+    .pName = "main",
+    .flags = 0,
+    .pNext = nullptr,
+    .pSpecializationInfo = nullptr,
+  };
+
+  shaderStages[1] = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+    .module = fragShaderModule,
+    .pName = "main",
+    .flags = 0,
+    .pNext = nullptr,
+    .pSpecializationInfo = nullptr,
   };
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{
@@ -93,7 +94,7 @@ void LvePipeline::createGraphicsPipeline(
   VkGraphicsPipelineCreateInfo pipelineInfo{
     .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
     .stageCount = 2,
-    .pStages = shaderStages,
+    .pStages = &shaderStages[0],
     .pVertexInputState = &vertexInputInfo,
     .pInputAssemblyState = &configInfo.inputAssemblyInfo,
     .pViewportState = &configInfo.viewportInfo,

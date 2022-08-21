@@ -1,7 +1,8 @@
 #version 450
 
-layout (location = 0) out vec4 outColor;
+layout (location = 0) out vec4 outAtt0;
+layout (location = 0) in vec3 vertexColor;
 
 void main() {
-    outColor = vec4(1.0, 0.0, 0.0, 1.0);
+    outAtt0 = vec4(vertexColor, 1.0);
 }
