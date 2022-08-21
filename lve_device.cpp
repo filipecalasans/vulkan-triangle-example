@@ -8,17 +8,18 @@
 
 namespace lve {
 
+namespace {
+
 // local callback functions
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
     VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
     VkDebugUtilsMessageTypeFlagsEXT messageType,
     const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
     void *pUserData) {
-  std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
+  std::cerr << "[Validation Layer] " << pCallbackData->pMessage << std::endl;
   return VK_FALSE;
 }
-
+ 
 VkResult CreateDebugUtilsMessengerEXT(
     VkInstance instance,
     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
@@ -45,6 +46,8 @@ void DestroyDebugUtilsMessengerEXT(
     func(instance, debugMessenger, pAllocator);
   }
 }
+
+} // namespace
 
 // class member functions
 LveDevice::LveDevice(LveWindow &window) : window{window} {
@@ -73,33 +76,42 @@ void LveDevice::createInstance() {
     throw std::runtime_error("validation layers requested, but not available!");
   }
 
-  VkApplicationInfo appInfo = {};
-  appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-  appInfo.pApplicationName = "LittleVulkanEngine App";
-  appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.pEngineName = "No Engine";
-  appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-  appInfo.apiVersion = VK_API_VERSION_1_0;
+  VkApplicationInfo appInfo{
+    .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+    .pApplicationName = "LittleVulkanEngine App",
+    .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+    .pEngineName = "No Engine",
+    .engineVersion = VK_MAKE_VERSION(1, 0, 0),
+    .apiVersion = VK_API_VERSION_1_0,
+  };
 
   VkInstanceCreateInfo createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   createInfo.pApplicationInfo = &appInfo;
 
   auto extensions = getRequiredExtensions();
+
+  for(auto& x : extensions) {
+    std::cout << "Extension: " << x << std::endl;
+  }
   createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   createInfo.ppEnabledExtensionNames = extensions.data();
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-  if (enableValidationLayers) {
-    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-    createInfo.ppEnabledLayerNames = validationLayers.data();
 
+  if (enableValidationLayers) {
     populateDebugMessengerCreateInfo(debugCreateInfo);
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
   } else {
     createInfo.enabledLayerCount = 0;
     createInfo.pNext = nullptr;
   }
+
+#if (defined(LVE_ENABLE_PORTABILITY_EXTENSION))
+  createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
 
   if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
     throw std::runtime_error("failed to create instance!");
@@ -130,7 +142,7 @@ void LveDevice::pickPhysicalDevice() {
   }
 
   vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-  std::cout << "physical device: " << properties.deviceName << std::endl;
+  std::cout << "Physical device: " << properties.deviceName << std::endl;
 }
 
 void LveDevice::createLogicalDevice() {
@@ -139,14 +151,14 @@ void LveDevice::createLogicalDevice() {
   std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
   std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily, indices.presentFamily};
 
-  float queuePriority = 1.0f;
+  const float queuePriority = 1.0f;
   for (uint32_t queueFamily : uniqueQueueFamilies) {
     VkDeviceQueueCreateInfo queueCreateInfo = {};
     queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfo.queueFamilyIndex = queueFamily;
     queueCreateInfo.queueCount = 1;
     queueCreateInfo.pQueuePriorities = &queuePriority;
-    queueCreateInfos.push_back(queueCreateInfo);
+    queueCreateInfos.emplace_back(queueCreateInfo);
   }
 
   VkPhysicalDeviceFeatures deviceFeatures = {};
@@ -214,7 +226,7 @@ bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
 }
 
 void LveDevice::populateDebugMessengerCreateInfo(
-    VkDebugUtilsMessengerCreateInfoEXT &createInfo) {
+    VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
   createInfo = {};
   createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
   createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
@@ -227,7 +239,9 @@ void LveDevice::populateDebugMessengerCreateInfo(
 }
 
 void LveDevice::setupDebugMessenger() {
-  if (!enableValidationLayers) return;
+  if (!enableValidationLayers) {
+    return;
+  }
   VkDebugUtilsMessengerCreateInfoEXT createInfo;
   populateDebugMessengerCreateInfo(createInfo);
   if (CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
@@ -268,9 +282,12 @@ std::vector<const char *> LveDevice::getRequiredExtensions() {
   std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
   if (enableValidationLayers) {
-    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
   }
-
+  if (enablePortabilityExtension) {
+    extensions.emplace_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    extensions.emplace_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+  }
   return extensions;
 }
 
@@ -313,7 +330,7 @@ bool LveDevice::checkDeviceExtensionSupport(VkPhysicalDevice device) {
   for (const auto &extension : availableExtensions) {
     requiredExtensions.erase(extension.extensionName);
   }
-
+  
   return requiredExtensions.empty();
 }
 

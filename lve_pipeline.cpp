@@ -33,12 +33,12 @@ std::vector<char> LvePipeline::readFile(const std::string& filepath)
     throw std::runtime_error("failed to open file: " + filepath);
   }
 
-  size_t fileSize = static_cast<size_t>(file.tellg());
+  const size_t fileSize = static_cast<size_t>(file.tellg());
+  assert(fileSize != 0 && "Files is empty");
   std::vector<char> buffer(fileSize);
 
   file.seekg(0);
   file.read(buffer.data(), fileSize);
-  
   file.close();
   return buffer;
 }
@@ -61,7 +61,7 @@ void LvePipeline::createGraphicsPipeline(
   createShaderModule(vertCode, &vertShaderModule);
   createShaderModule(fragCode, &fragShaderModule);
 
-  VkPipelineShaderStageCreateInfo shaderStages[2] = {
+  VkPipelineShaderStageCreateInfo shaderStages[] = {
     {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
       .stage = VK_SHADER_STAGE_VERTEX_BIT,
@@ -90,37 +90,18 @@ void LvePipeline::createGraphicsPipeline(
     .pVertexBindingDescriptions = nullptr,
   };
 
-  VkPipelineViewportStateCreateInfo viewportInfo{
-    .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-    .viewportCount = 1,
-    .pViewports = &configInfo.viewport,
-    .scissorCount = 1,
-    .pScissors = &configInfo.scissor,
-  };
-
-  VkPipelineColorBlendStateCreateInfo colorBlendInfo{
-    .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-    .logicOpEnable = VK_FALSE,
-    .logicOp = VK_LOGIC_OP_COPY,  // Optional
-    .attachmentCount = 1,
-    .pAttachments = &configInfo.colorBlendAttachment,
-    .blendConstants[0] = 0.0f,  // Optional
-    .blendConstants[1] = 0.0f,  // Optional
-    .blendConstants[2] = 0.0f,  // Optional
-    .blendConstants[3] = 0.0f,  // Optional
-  };
-
   VkGraphicsPipelineCreateInfo pipelineInfo{
     .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
     .stageCount = 2,
     .pStages = shaderStages,
     .pVertexInputState = &vertexInputInfo,
     .pInputAssemblyState = &configInfo.inputAssemblyInfo,
-    .pViewportState = &viewportInfo,
+    .pViewportState = &configInfo.viewportInfo,
     .pRasterizationState = &configInfo.rasterizationInfo,
     .pMultisampleState = &configInfo.multisampleInfo,
-    .pColorBlendState = &colorBlendInfo,
+    .pColorBlendState = &configInfo.colorBlendInfo,
     .pDepthStencilState = &configInfo.depthStencilInfo,
+    // .pDynamicState = &dynamicState,
     .pDynamicState = nullptr,
     
     .layout = configInfo.pipelineLayout,
@@ -155,74 +136,96 @@ void LvePipeline::bind(VkCommandBuffer commandBuffer)
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
-PipelineConfigInfo LvePipeline::defaultPipelineConfigInfo(std::uint32_t width, std::uint32_t height)
+void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo, std::uint32_t width, std::uint32_t height)
 {
-  PipelineConfigInfo configInfo{
-    .viewport = {
-      .x = 0.0f,
-      .y = 0.0f,
-      .width = static_cast<float>(width),
-      .height = static_cast<float>(height),
-      .minDepth = 0.0,
-      .maxDepth = 1.0f,
-    },
-    .scissor = {
-      .offset = {0, 0},
-      .extent = {width, height},
-    },
-    .inputAssemblyInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-      .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-      .primitiveRestartEnable = VK_FALSE,
-    },
-    .rasterizationInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-      .depthClampEnable = VK_FALSE,
-      .rasterizerDiscardEnable = VK_FALSE,
-      .polygonMode = VK_POLYGON_MODE_FILL,
-      .lineWidth = 1.0f,
-      .cullMode = VK_CULL_MODE_NONE,
-      .frontFace = VK_FRONT_FACE_CLOCKWISE,
-      .depthBiasEnable = VK_FALSE,
-      .depthBiasConstantFactor = 0.0f,  // Optional
-      .depthBiasClamp = 0.0f,           // Optional
-      .depthBiasSlopeFactor = 0.0f,     // Optional
-    },
-    .multisampleInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-      .sampleShadingEnable = VK_FALSE,
-      .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
-      .minSampleShading = 1.0f,           // Optional
-      .pSampleMask = nullptr,             // Optional
-      .alphaToCoverageEnable = VK_FALSE,  // Optional
-      .alphaToOneEnable = VK_FALSE,       // Optional
-    },
-    .colorBlendAttachment = {
-      .colorWriteMask =
-        VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-        VK_COLOR_COMPONENT_A_BIT,
-      .blendEnable = VK_FALSE,
-      .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
-      .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
-      .colorBlendOp = VK_BLEND_OP_ADD,              // Optional
-      .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
-      .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
-      .alphaBlendOp = VK_BLEND_OP_ADD,              // Optional
-    },
-    .depthStencilInfo = {
-      .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-      .depthTestEnable = VK_TRUE,
-      .depthWriteEnable = VK_TRUE,
-      .depthCompareOp = VK_COMPARE_OP_LESS,
-      .depthBoundsTestEnable = VK_FALSE,
-      .minDepthBounds = 0.0f,         // Optional
-      .maxDepthBounds = 1.0f,         // Optional
-      .stencilTestEnable = VK_FALSE,
-      .front = {},                    // Optional
-      .back = {},                     // Optional
-    },
+  configInfo.viewport = {
+    .x = 0.0f,
+    .y = 0.0f,
+    .width = static_cast<float>(width),
+    .height = static_cast<float>(height),
+    .minDepth = 0.0,
+    .maxDepth = 1.0f,
   };
-  return configInfo;
+
+  configInfo.scissor = {
+    .offset = {0, 0},
+    .extent = {width, height},
+  };
+
+  configInfo.inputAssemblyInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+    .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+    .primitiveRestartEnable = VK_FALSE,
+  };
+
+  configInfo.rasterizationInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
+    .depthClampEnable = VK_FALSE,
+    .rasterizerDiscardEnable = VK_FALSE,
+    .polygonMode = VK_POLYGON_MODE_FILL,
+    .lineWidth = 1.0f,
+    .cullMode = VK_CULL_MODE_NONE,
+    .frontFace = VK_FRONT_FACE_CLOCKWISE,
+    .depthBiasEnable = VK_FALSE,
+    .depthBiasConstantFactor = 0.0f,  // Optional
+    .depthBiasClamp = 0.0f,           // Optional
+    .depthBiasSlopeFactor = 0.0f,     // Optional
+  };
+  configInfo.multisampleInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+    .sampleShadingEnable = VK_FALSE,
+    .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+    .minSampleShading = 1.0f,           // Optional
+    .pSampleMask = nullptr,             // Optional
+    .alphaToCoverageEnable = VK_FALSE,  // Optional
+    .alphaToOneEnable = VK_FALSE,       // Optional
+  };
+  configInfo.colorBlendAttachment = {
+    .colorWriteMask =
+      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+      VK_COLOR_COMPONENT_A_BIT,
+    .blendEnable = VK_FALSE,
+    .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
+    .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
+    .colorBlendOp = VK_BLEND_OP_ADD,              // Optional
+    .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
+    .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
+    .alphaBlendOp = VK_BLEND_OP_ADD,              // Optional
+  };
+  configInfo.depthStencilInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+    .depthTestEnable = VK_TRUE,
+    .depthWriteEnable = VK_TRUE,
+    .depthCompareOp = VK_COMPARE_OP_LESS,
+    .depthBoundsTestEnable = VK_FALSE,
+    .minDepthBounds = 0.0f,         // Optional
+    .maxDepthBounds = 1.0f,         // Optional
+    .stencilTestEnable = VK_FALSE,
+    .front = {},                    // Optional
+    .back = {},                     // Optional
+  }; 
+
+  configInfo.colorBlendInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
+    .logicOpEnable = VK_FALSE,
+    .logicOp = VK_LOGIC_OP_COPY,  // Optional
+    .attachmentCount = 1,
+    .pAttachments = &configInfo.colorBlendAttachment,
+    .blendConstants[0] = 0.0f,  // Optional
+    .blendConstants[1] = 0.0f,  // Optional
+    .blendConstants[2] = 0.0f,  // Optional
+    .blendConstants[3] = 0.0f,  // Optional
+  };
+
+  configInfo.viewportInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+    .viewportCount = 1,
+    .pViewports = &configInfo.viewport,
+    .scissorCount = 1,
+    .pScissors = &configInfo.scissor,
+    .pNext = nullptr,
+    .flags = 0,
+  };
 }
 
 }  // namespace lve 

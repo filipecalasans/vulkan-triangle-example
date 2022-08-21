@@ -30,7 +30,9 @@ private:
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
+    void createSyncObjects();
     void drawFrame();
+    void recordCommandBuffer(VkFramebuffer frameBuffer, VkCommandBuffer commandBuffer);
 
     LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan"};
     LveDevice lveDevice{lveWindow};
@@ -38,6 +40,7 @@ private:
     std::unique_ptr<LvePipeline> lvePipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
+
 };
 
 }

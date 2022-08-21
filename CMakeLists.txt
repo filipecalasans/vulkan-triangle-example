@@ -10,6 +10,8 @@ find_package(glm REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(LVE_ENABLE_PORTABILITY_EXTENSION "Enable Vulkan Portability Extension" OFF)
+
 # Create Exectuable
 add_executable(lve)
 
@@ -29,3 +31,7 @@ target_include_directories(lve PUBLIC ${GLM_INCLUDE_DIRS})
 
 # Linked Libraries
 target_link_libraries(lve glfw Vulkan::Vulkan)
+
+if(LVE_ENABLE_PORTABILITY_EXTENSION)
+    target_compile_definitions(lve PUBLIC LVE_ENABLE_PORTABILITY_EXTENSION)
+endif(LVE_ENABLE_PORTABILITY_EXTENSION)

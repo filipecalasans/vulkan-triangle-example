@@ -22,6 +22,9 @@ LveSwapChain::LveSwapChain(LveDevice &deviceRef, VkExtent2D extent)
 }
 
 LveSwapChain::~LveSwapChain() {
+
+  vkDestroyRenderPass(device.device(), renderPass, nullptr);
+  
   for (auto imageView : swapChainImageViews) {
     vkDestroyImageView(device.device(), imageView, nullptr);
   }
@@ -41,8 +44,6 @@ LveSwapChain::~LveSwapChain() {
   for (auto framebuffer : swapChainFramebuffers) {
     vkDestroyFramebuffer(device.device(), framebuffer, nullptr);
   }
-
-  vkDestroyRenderPass(device.device(), renderPass, nullptr);
 
   // cleanup synchronization objects
   for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -193,6 +194,10 @@ void LveSwapChain::createImageViews() {
     viewInfo.subresourceRange.levelCount = 1;
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
+    // viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    // viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    // viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    // viewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
     if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) !=
         VK_SUCCESS) {
