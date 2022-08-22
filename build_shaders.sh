@@ -4,13 +4,10 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 BUILD_DIR="${SCRIPT_DIR}/build"
 
-if [[ -z "${VULKAN_ROOT}" ]]; then
-    VULKAN_VERSION="1.3.216.0"
-    VULKAN_ROOT="${HOME}/VulkanSDK/${VULKAN_VERSION}/"    
+if [[ -z "${VULKAN_SDK}" ]]; then
+    # Adds required Vulkan tools to PATH
+    source "${VULKAN_ROOT}/setup-env.sh"
 fi
-
-# Adds required Vulkan tools to PATH
-source "${VULKAN_ROOT}/setup-env.sh"
 
 mkdir -p "${BUILD_DIR}/shaders"
 
