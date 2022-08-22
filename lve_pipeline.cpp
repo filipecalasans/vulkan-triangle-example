@@ -102,7 +102,6 @@ void LvePipeline::createGraphicsPipeline(
     .pMultisampleState = &configInfo.multisampleInfo,
     .pColorBlendState = &configInfo.colorBlendInfo,
     .pDepthStencilState = &configInfo.depthStencilInfo,
-    // .pDynamicState = &dynamicState,
     .pDynamicState = nullptr,
     
     .layout = configInfo.pipelineLayout,

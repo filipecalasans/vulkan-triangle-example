@@ -6,7 +6,7 @@ BUILD_DIR="${SCRIPT_DIR}/build"
 
 if [[ -z "${VULKAN_SDK}" ]]; then
     # Adds required Vulkan tools to PATH
-    source "${VULKAN_ROOT}/setup-env.sh"
+    bash "${VULKAN_ROOT}/setup-env.sh"
 fi
 
 mkdir -p "${BUILD_DIR}/shaders"

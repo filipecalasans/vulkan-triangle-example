@@ -27,15 +27,15 @@ struct QueueFamilyIndices {
 class LveDevice {
   public:
 #ifdef NDEBUG
-    const bool enableValidationLayers = false;
+    bool enableValidationLayers = false;
 #else
-    const bool enableValidationLayers = true;
+    bool enableValidationLayers = true;
 #endif
 
 #ifdef LVE_ENABLE_PORTABILITY_EXTENSION
-    const bool enablePortabilityExtension = true;
+    bool enablePortabilityExtension = true;
 #else
-    const bool enablePortabilityExtension = false;
+    bool enablePortabilityExtension = false;
 #endif
 
     LveDevice(LveWindow &window);

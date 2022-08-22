@@ -193,11 +193,7 @@ void LveSwapChain::createImageViews() {
     viewInfo.subresourceRange.levelCount = 1;
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
-    // viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-    // viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-    // viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-    // viewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
+    
     if (vkCreateImageView(device.device(), &viewInfo, nullptr, &swapChainImageViews[i]) !=
         VK_SUCCESS) {
       throw std::runtime_error("failed to create texture image view!");

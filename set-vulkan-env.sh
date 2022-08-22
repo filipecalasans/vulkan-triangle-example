@@ -2,13 +2,15 @@
 
 if [[ ! -z "${VULKAN_SDK}" ]]; then
     echo "Vulkan Env. identified!"
-    exit 0
+else 
+    if [[ -z "${VULKAN_ROOT}" ]]; then
+        VULKAN_VERSION="1.3.216.0"
+        VULKAN_ROOT="${HOME}/VulkanSDK/${VULKAN_VERSION}/"    
+    fi
+    pushd "${VULKAN_ROOT}"
+    # Adds required Vulkan tools to PATH
+    source "./setup-env.sh" || popd
+    popd
 fi
 
-if [[ -z "${VULKAN_ROOT}" ]]; then
-    VULKAN_VERSION="1.3.216.0"
-    VULKAN_ROOT="${HOME}/VulkanSDK/${VULKAN_VERSION}/"    
-fi
-
-# Adds required Vulkan tools to PATH
-source "${VULKAN_ROOT}/setup-env.sh"
+echo "Vulkan SDK: ${VULKAN_SDK}"
