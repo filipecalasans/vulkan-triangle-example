@@ -2,9 +2,13 @@
 #define FIRST_APP_H_
 
 #include "lve_device.h"
+#include "lve_model.h"
 #include "lve_pipeline.h"
 #include "lve_swap_chain.h"
 #include "lve_window.h"
+
+// vulkan headers
+#include <vulkan/vulkan.h>
 
 //std
 #include <memory>
@@ -27,6 +31,7 @@ public:
 
 private:
 
+    void loadModels();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -40,7 +45,7 @@ private:
     std::unique_ptr<LvePipeline> lvePipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
-
+    std::unique_ptr<LveModel> lveModel;
 };
 
 }

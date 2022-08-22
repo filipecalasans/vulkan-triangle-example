@@ -1,4 +1,5 @@
 #include "lve_pipeline.h"
+#include "lve_model.h"
 
 // std
 #include <cassert>
@@ -83,12 +84,15 @@ void LvePipeline::createGraphicsPipeline(
     .pSpecializationInfo = nullptr,
   };
 
+  auto bindingDescriptions = LveModel::Vertex::getBindingDescriptions();
+  auto attributeDescriptions = LveModel::Vertex::getAttributeDescriptions();
+
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{
     .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-    .vertexAttributeDescriptionCount = 0,
-    .vertexBindingDescriptionCount = 0,
-    .pVertexAttributeDescriptions = nullptr,
-    .pVertexBindingDescriptions = nullptr,
+    .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
+    .vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size()),
+    .pVertexAttributeDescriptions = attributeDescriptions.data(),
+    .pVertexBindingDescriptions = bindingDescriptions.data(),
   };
 
   VkGraphicsPipelineCreateInfo pipelineInfo{

@@ -18,6 +18,7 @@ add_executable(lve)
 # Source Files
 target_sources(lve PRIVATE 
     main.cpp
+    lve_model.cpp
     lve_pipeline.cpp
     lve_window.cpp
     first_app.cpp  

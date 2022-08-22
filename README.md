@@ -32,6 +32,10 @@ You need to install the following dependencies in order to be able to build this
 It is worth noting that the scripts provided will default the Vulkan to
 version `1.3.216` if you don't provide `VULKAN_ROOT` environment variable.
 
+By using the provided scripts, you can ensure that it builds and launches 
+the application using the Vulkan SDK specified. This will avoid version conflict
+if you have multiple Vulkan versions installed in your system.
+
 ```sh
 VULKAN_ROOT=$HOME/VulkanSDK/<VERSION> source ./set-vulkan-env.sh
 ./build.sh
