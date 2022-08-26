@@ -1,8 +1,8 @@
 #version 450
 
 layout (location = 0) out vec4 outAtt0;
-layout (location = 0) in vec3 vertexColor;
+layout (location = 0) in vec3 fragColor;
 
 void main() {
-    outAtt0 = vec4(vertexColor, 1.0);
+    outAtt0 = vec4(fragColor, 1.0);
 }
