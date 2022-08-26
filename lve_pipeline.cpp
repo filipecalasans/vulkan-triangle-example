@@ -106,7 +106,7 @@ void LvePipeline::createGraphicsPipeline(
     .pMultisampleState = &configInfo.multisampleInfo,
     .pColorBlendState = &configInfo.colorBlendInfo,
     .pDepthStencilState = &configInfo.depthStencilInfo,
-    .pDynamicState = nullptr,
+    .pDynamicState = &configInfo.dynamicStateInfo,
     
     .layout = configInfo.pipelineLayout,
     .renderPass = configInfo.renderPass,
@@ -140,22 +140,8 @@ void LvePipeline::bind(VkCommandBuffer commandBuffer)
   vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
-void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo, std::uint32_t width, std::uint32_t height)
+void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
 {
-  configInfo.viewport = {
-    .x = 0.0f,
-    .y = 0.0f,
-    .width = static_cast<float>(width),
-    .height = static_cast<float>(height),
-    .minDepth = 0.0,
-    .maxDepth = 1.0f,
-  };
-
-  configInfo.scissor = {
-    .offset = {0, 0},
-    .extent = {width, height},
-  };
-
   configInfo.inputAssemblyInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
     .topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
@@ -224,10 +210,18 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo, std:
   configInfo.viewportInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
     .viewportCount = 1,
-    .pViewports = &configInfo.viewport,
+    .pViewports = nullptr,
     .scissorCount = 1,
-    .pScissors = &configInfo.scissor,
+    .pScissors = nullptr,
     .pNext = nullptr,
+    .flags = 0,
+  };
+
+  configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+  configInfo.dynamicStateInfo = {
+    .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+    .pDynamicStates = configInfo.dynamicStateEnables.data(),
+    .dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size()),
     .flags = 0,
   };
 }
