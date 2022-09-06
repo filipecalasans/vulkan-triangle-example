@@ -2,7 +2,7 @@
 #define FIRST_APP_H_
 
 #include "lve_device.h"
-#include "lve_model.h"
+#include "lve_game_object.h"
 #include "lve_pipeline.h"
 #include "lve_swap_chain.h"
 #include "lve_window.h"
@@ -12,6 +12,7 @@
 
 //std
 #include <memory>
+#include <vector>
 
 namespace lve {
 
@@ -31,7 +32,7 @@ public:
 
 private:
 
-    void loadModels();
+    void loadGameObjects();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -39,6 +40,7 @@ private:
     void drawFrame();
     void recreateSwapChain();
     void recordCommandBuffer(int imageIndex);
+    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan"};
     LveDevice lveDevice{lveWindow};
@@ -46,7 +48,7 @@ private:
     std::unique_ptr<LvePipeline> lvePipeline;
     VkPipelineLayout pipelineLayout;
     std::vector<VkCommandBuffer> commandBuffers;
-    std::unique_ptr<LveModel> lveModel;
+    std::vector<LveGameObject> gameObjects;
 };
 
 }
