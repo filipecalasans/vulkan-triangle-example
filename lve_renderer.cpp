@@ -42,7 +42,6 @@ void LveRenderer::recreateSwapChain() {
             throw std::runtime_error("Swap chain image (or depth) format has changed");
         }
     }
-    // Revisit this later.
 }
 
 void LveRenderer::createCommandBuffers() {
