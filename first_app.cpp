@@ -5,6 +5,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 // std
 #include <array>
@@ -51,6 +52,9 @@ void FirstApp::loadGameObjects() {
     triangle.model = lveModel;
     triangle.color = {.1f, .8f, .1f};
     triangle.transform2d.translation.x = .2f;
+    triangle.transform2d.scale = {1.2f, .5f};
+    triangle.transform2d.rotation = .25f * glm::two_pi<float>();
+
     gameObjects.push_back(std::move(triangle));
 }
 
@@ -163,8 +167,12 @@ void FirstApp::recordCommandBuffer(int imageIndex) {
 }
 
 void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer) {
+
+    
     lvePipeline->bind(commandBuffer);
     for (auto& obj : gameObjects) {
+      obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
+      
       SimplePushConstantData push {
         .offset = obj.transform2d.translation,
         .color = obj.color,
