@@ -1,16 +1,15 @@
-#ifndef FIRST_APP_H_
-#define FIRST_APP_H_
+#pragma once
 
 #include "lve_device.h"
 #include "lve_game_object.h"
-#include "lve_pipeline.h"
-#include "lve_swap_chain.h"
+#include "lve_render.h"
 #include "lve_window.h"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
 
 //std
+#include <cassert>
 #include <memory>
 #include <vector>
 
@@ -33,23 +32,13 @@ public:
 private:
 
     void loadGameObjects();
-    void createPipelineLayout();
-    void createPipeline();
-    void createCommandBuffers();
     void createSyncObjects();
-    void drawFrame();
-    void recreateSwapChain();
-    void recordCommandBuffer(int imageIndex);
-    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan"};
     LveDevice lveDevice{lveWindow};
-    std::unique_ptr<LveSwapChain> lveSwapChain;
-    std::unique_ptr<LvePipeline> lvePipeline;
-    VkPipelineLayout pipelineLayout;
-    std::vector<VkCommandBuffer> commandBuffers;
+    LveRenderer lveRenderer{lveWindow, lveDevice};
+ 
     std::vector<LveGameObject> gameObjects;
 };
 
 }
-#endif

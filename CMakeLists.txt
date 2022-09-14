@@ -18,12 +18,14 @@ add_executable(lve)
 # Source Files
 target_sources(lve PRIVATE 
     main.cpp
+    first_app.cpp 
+    lve_device.cpp 
     lve_model.cpp
     lve_pipeline.cpp
-    lve_window.cpp
-    first_app.cpp  
-    lve_device.cpp  
+    lve_renderer.cpp
     lve_swap_chain.cpp
+    lve_window.cpp
+    simple_render_system.cpp
 )
 
 # Includes
