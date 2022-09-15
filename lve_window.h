@@ -23,6 +23,7 @@ public:
     VkExtent2D getExtent() { return {static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}; }
     bool resized() const { return frameBufferResized; }
     void resetResized() { frameBufferResized = false; }
+    GLFWwindow *getGLFWwindow() const { return window; }
 
 private:
 

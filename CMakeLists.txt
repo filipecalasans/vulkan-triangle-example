@@ -18,7 +18,8 @@ add_executable(lve)
 # Source Files
 target_sources(lve PRIVATE 
     main.cpp
-    first_app.cpp 
+    first_app.cpp
+    keyboard_movement_controller.cpp
     lve_camera.cpp
     lve_device.cpp 
     lve_model.cpp
