@@ -19,6 +19,7 @@ add_executable(lve)
 target_sources(lve PRIVATE 
     main.cpp
     first_app.cpp 
+    lve_camera.cpp
     lve_device.cpp 
     lve_model.cpp
     lve_pipeline.cpp

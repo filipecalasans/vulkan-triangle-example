@@ -40,6 +40,10 @@ public:
         return currentFrameIndex;
     }
 
+    float getAspectRatio() const {
+        return lveSwapChain->extentAspectRatio();
+    }
+
     VkCommandBuffer beginFrame();
     void endFrame();
     void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
