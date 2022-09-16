@@ -12,10 +12,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(LVE_ENABLE_PORTABILITY_EXTENSION "Enable Vulkan Portability Extension" OFF)
 
-# Create Exectuable
+# Create Exectuables and Libraries
 add_executable(lve)
+add_library(tiny_obj_loader STATIC)
 
-# Source Files
+# Source Files lve
 target_sources(lve PRIVATE 
     main.cpp
     first_app.cpp
@@ -30,12 +31,19 @@ target_sources(lve PRIVATE
     simple_render_system.cpp
 )
 
-# Includes
+# Source Files tinyobjloader
+target_sources(tiny_obj_loader PRIVATE 
+    third_party/tinyobjloader/tiny_obj_loader.cc)
+
+# Includes lve
 target_include_directories(lve PUBLIC ${GLEW_INCLUDE_DIRS})
 target_include_directories(lve PUBLIC ${GLM_INCLUDE_DIRS})
+target_include_directories(lve PRIVATE third_party)
+# Includes tiny_obj_loader
+target_include_directories(tiny_obj_loader PRIVATE third_party/tiny_obj_loader)
 
-# Linked Libraries
-target_link_libraries(lve glfw Vulkan::Vulkan)
+# Linked Libraries lve
+target_link_libraries(lve glfw Vulkan::Vulkan tiny_obj_loader)
 
 if(LVE_ENABLE_PORTABILITY_EXTENSION)
     target_compile_definitions(lve PUBLIC LVE_ENABLE_PORTABILITY_EXTENSION)

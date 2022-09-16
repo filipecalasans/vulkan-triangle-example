@@ -1,5 +1,9 @@
 #include "lve_model.h"
 
+// libs
+#define TINYOBJECTLOADER_IMPLEMENTATION
+#include <tinyobjloader/tiny_obj_loader.h>
+
 // std
 #include <cassert>
 #include <cstring>
