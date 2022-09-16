@@ -17,6 +17,7 @@ class KeyboardMovementController {
     int lookRight = GLFW_KEY_RIGHT;
     int lookUp = GLFW_KEY_UP;
     int lookDown = GLFW_KEY_DOWN;
+    int resetView = GLFW_KEY_SPACE;
   };
 
   void moveInPlaneXZ(GLFWwindow* window, float dt, LveGameObject& gameObject);

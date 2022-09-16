@@ -37,5 +37,10 @@ void KeyboardMovementController::moveInPlaneXZ(
   if (glm::dot(moveDir, moveDir) > std::numeric_limits<float>::epsilon()) {
     gameObject.transform.translation += moveSpeed * dt * glm::normalize(moveDir);
   }
+
+  if (glfwGetKey(window, keys.resetView) == GLFW_PRESS) {
+    gameObject.transform.translation = glm::vec3{0.5f, 0.f, 0.5f};
+    gameObject.transform.rotation = glm::vec3{0.0f, 0.0f, 0.0f};
+  }
 }
 }  // namespace lve
