@@ -48,3 +48,9 @@ target_link_libraries(lve glfw Vulkan::Vulkan tiny_obj_loader)
 if(LVE_ENABLE_PORTABILITY_EXTENSION)
     target_compile_definitions(lve PUBLIC LVE_ENABLE_PORTABILITY_EXTENSION)
 endif(LVE_ENABLE_PORTABILITY_EXTENSION)
+
+add_custom_command(
+  TARGET lve POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory 
+    ${CMAKE_SOURCE_DIR}/models/
+    $<TARGET_FILE_DIR:lve>/models/)
