@@ -6,37 +6,30 @@
 
 #include <string>
 
+#include "lve_nativewindow.h"
+
 namespace lve {
 
-class LveWindow {
+class LveWindow : public LveNativeWindow {
 
 public:
 
     LveWindow(int w, int h, std::string name);
-    ~LveWindow();
+    virtual ~LveWindow();
 
     LveWindow(const LveWindow&) = delete;
     LveWindow &operator=(const LveWindow&) = delete;
     
-    bool shouldClose();
-    void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
-    VkExtent2D getExtent() { return {static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}; }
-    bool resized() const { return frameBufferResized; }
-    void resetResized() { frameBufferResized = false; }
-    GLFWwindow *getGLFWwindow() const { return window; }
-
+    std::vector<const char*> getRequiredExtensions() override;
+    bool shouldClose() override;
+    void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) override;
+    void waitForEvents() override;
+    
 private:
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
+
     void initWindow();
-
-
-    int width;
-    int height;
-    bool frameBufferResized = false;
-
-    std::string windowName;
-    GLFWwindow *window;
 };
 
 }

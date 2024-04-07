@@ -17,9 +17,14 @@
 #include <memory>
 #include <stdexcept>
 
+#include "lve_windowfactory.h"
+
 namespace lve {
 
-FirstApp::FirstApp() {
+FirstApp::FirstApp() :
+  lveWindow(createNativeWindow(WIDTH, HEIGHT, "Hellp Vulkan")),
+  lveDevice(*lveWindow),
+  lveRenderer(*lveWindow, lveDevice) {
   loadGameObjects();
 }
 
@@ -32,14 +37,15 @@ void FirstApp::run() {
   KeyboardMovementController cameraController{};
 
   auto currentTime = std::chrono::high_resolution_clock::now();
-  while (!lveWindow.shouldClose()) {
+  while (!lveWindow->shouldClose()) {
     glfwPollEvents();
 
     auto newTime = std::chrono::high_resolution_clock::now();
     auto frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
     currentTime = newTime;
 
-    cameraController.moveInPlaneXZ(lveWindow.getGLFWwindow(), frameTime, viewerObject);
+    // TODO: Make input cross platform.
+    cameraController.moveInPlaneXZ(reinterpret_cast<GLFWwindow*>(lveWindow->getNativeWindow()), frameTime, viewerObject);
     camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
     float aspect = lveRenderer.getAspectRatio();

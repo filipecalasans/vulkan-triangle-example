@@ -2,7 +2,7 @@
 
 #include "lve_device.h"
 #include "lve_swap_chain.h"
-#include "lve_window.h"
+#include "lve_nativewindow.h"
 
 //std
 #include <cassert>
@@ -21,7 +21,8 @@ class LveRenderer
 {
 public:
 
-    LveRenderer(LveWindow& lveWindow, LveDevice& device);
+    LveRenderer(LveNativeWindow& lveWindow, LveDevice& device);
+    
     ~LveRenderer();
 
     LveRenderer(const LveRenderer&) = delete;
@@ -57,7 +58,7 @@ private:
     void createSyncObjects();
     void recreateSwapChain();
 
-    LveWindow& lveWindow;
+    LveNativeWindow& lveWindow;
     LveDevice& lveDevice;
     std::unique_ptr<LveSwapChain> lveSwapChain;
     std::vector<VkCommandBuffer> commandBuffers;

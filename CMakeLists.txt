@@ -5,12 +5,12 @@ enable_testing()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Vulkan REQUIRED COMPONENTS glslc)
-find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
 option(LVE_ENABLE_PORTABILITY_EXTENSION "Enable Vulkan Portability Extension" OFF)
+option(LVE_USE_GLFW "Use GLW to interact with the native window system" OFF)
 
 # Create Exectuables and Libraries
 add_executable(lve)
@@ -27,7 +27,6 @@ target_sources(lve PRIVATE
     lve_pipeline.cpp
     lve_renderer.cpp
     lve_swap_chain.cpp
-    lve_window.cpp
     simple_render_system.cpp
 )
 
@@ -39,15 +38,22 @@ target_sources(tiny_obj_loader PRIVATE
 target_include_directories(lve PUBLIC ${GLEW_INCLUDE_DIRS})
 target_include_directories(lve PUBLIC ${GLM_INCLUDE_DIRS})
 target_include_directories(lve PRIVATE third_party)
-# Includes tiny_obj_loader
-target_include_directories(tiny_obj_loader PRIVATE third_party/tiny_obj_loader)
 
 # Linked Libraries lve
-target_link_libraries(lve glfw Vulkan::Vulkan tiny_obj_loader)
+target_link_libraries(lve Vulkan::Vulkan tiny_obj_loader)
 
 if(LVE_ENABLE_PORTABILITY_EXTENSION)
     target_compile_definitions(lve PUBLIC LVE_ENABLE_PORTABILITY_EXTENSION)
 endif(LVE_ENABLE_PORTABILITY_EXTENSION)
+
+if(LVE_USE_GLFW)
+    find_package(glfw3 3.3 REQUIRED)
+    target_sources(
+        lve PRIVATE lve_window.cpp
+    )
+    target_compile_definitions(lve PUBLIC GLFW_XPLAT_DESKTOP)
+    target_link_libraries(lve glfw)
+endif(LVE_USE_GLFW)
 
 add_custom_command(
   TARGET lve POST_BUILD

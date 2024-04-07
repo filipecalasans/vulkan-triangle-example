@@ -8,7 +8,7 @@
 
 namespace lve {
 
-LveRenderer::LveRenderer(LveWindow& window, LveDevice& device) : lveWindow(window), lveDevice(device) {
+LveRenderer::LveRenderer(LveNativeWindow& window, LveDevice& device) : lveWindow(window), lveDevice(device) {
   recreateSwapChain();
   createCommandBuffers();
 }
@@ -28,7 +28,7 @@ void LveRenderer::recreateSwapChain() {
     auto extent = lveWindow.getExtent();
     while (extent.height == 0 || extent.width == 0) {
         extent = lveWindow.getExtent();
-        glfwWaitEvents();
+        lveWindow.waitForEvents();
     }
     vkDeviceWaitIdle(lveDevice.device());
 

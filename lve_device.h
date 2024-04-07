@@ -1,7 +1,7 @@
 #ifndef LVE_DEVICE_HH
 #define LVE_DEVICE_HH
 
-#include "lve_window.h"
+#include "lve_nativewindow.h"
 
 //std
 #include <string>
@@ -38,7 +38,7 @@ class LveDevice {
     bool enablePortabilityExtension = false;
 #endif
 
-    LveDevice(LveWindow &window);
+    LveDevice(LveNativeWindow &window);
     ~LveDevice();
     LveDevice(const LveDevice &) = delete;
     void operator=(const LveDevice &) = delete;
@@ -101,7 +101,7 @@ class LveDevice {
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    LveWindow &window;
+    LveNativeWindow &window;
     VkCommandPool commandPool;
 
     VkDevice device_;

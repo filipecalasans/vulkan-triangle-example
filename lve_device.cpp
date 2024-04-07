@@ -50,7 +50,7 @@ void DestroyDebugUtilsMessengerEXT(
 } // namespace
 
 // class member functions
-LveDevice::LveDevice(LveWindow &window) : window{window} {
+LveDevice::LveDevice(LveNativeWindow &window) : window{window} {
   createInstance();
   setupDebugMessenger();
   createSurface();
@@ -275,11 +275,8 @@ bool LveDevice::checkValidationLayerSupport() {
 }
 
 std::vector<const char *> LveDevice::getRequiredExtensions() {
-  uint32_t glfwExtensionCount = 0;
-  const char **glfwExtensions;
-  glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-  std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+  
+  std::vector<const char *> extensions = window.getRequiredExtensions();
 
   if (enableValidationLayers) {
     extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);

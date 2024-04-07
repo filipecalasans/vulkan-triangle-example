@@ -12,6 +12,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     CMAKE_FLAGS+=("-DLVE_ENABLE_PORTABILITY_EXTENSION=ON")
 fi
 
+CMAKE_FLAGS+=("-DLVE_USE_GLFW=ON")
+
 source "${SCRIPT_DIR}/set-vulkan-env.sh"
 "${SCRIPT_DIR}/build_shaders.sh"
 (cd "${BUILD_DIR}" && cmake "${CMAKE_FLAGS[@]}" ../ -G "Ninja" && ninja -j3)

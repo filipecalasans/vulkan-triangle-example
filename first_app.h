@@ -3,7 +3,7 @@
 #include "lve_device.h"
 #include "lve_game_object.h"
 #include "lve_render.h"
-#include "lve_window.h"
+#include "lve_nativewindow.h"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
@@ -34,9 +34,13 @@ private:
     void loadGameObjects();
     void createSyncObjects();
 
-    LveWindow lveWindow{WIDTH, HEIGHT, "Hello Vulkan"};
-    LveDevice lveDevice{lveWindow};
-    LveRenderer lveRenderer{lveWindow, lveDevice};
+    std::unique_ptr<LveNativeWindow> lveWindow; //{WIDTH, HEIGHT, "Hello Vulkan"};
+    
+    // LveDevice lveDevice{lveWindow};
+    // LveRenderer lveRenderer{lveWindow, lveDevice};
+
+    LveDevice lveDevice;
+    LveRenderer lveRenderer;
  
     std::vector<LveGameObject> gameObjects;
 };
