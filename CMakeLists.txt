@@ -28,6 +28,7 @@ target_sources(lve PRIVATE
     lve_renderer.cpp
     lve_swap_chain.cpp
     simple_render_system.cpp
+    lve_buffer.cpp
 )
 
 # Source Files tinyobjloader

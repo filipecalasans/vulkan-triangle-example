@@ -12,11 +12,13 @@
 #include <vulkan/vulkan.h>
 
 // std
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace lve {
+
+class LveBuffer;
 
 class LveModel final {
     public:
@@ -63,13 +65,12 @@ class LveModel final {
 
         LveDevice& lveDevice;
 
-        VkBuffer vertexBuffer;
-        VkDeviceMemory vertexBufferMemory;
+        std::unique_ptr<LveBuffer> vertexBuffer;
         uint32_t vertexCount;
         
         bool hasIndexBuffer = false;
-        VkBuffer indexBuffer;
-        VkDeviceMemory indexBufferMemory;
+
+        std::unique_ptr<LveBuffer> indexBuffer;
         uint32_t indexCount;
 };
 

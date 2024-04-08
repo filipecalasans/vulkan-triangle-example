@@ -5,6 +5,7 @@
 #include "lve_game_object.h"
 #include "lve_pipeline.h"
 #include "lve_swap_chain.h"
+#include "lve_frame_info.h"
 
 // vulkan headers
 #include <vulkan/vulkan.h>
@@ -26,9 +27,8 @@ public:
     SimpleRenderSystem &operator=(const SimpleRenderSystem&) = delete;
 
     void renderGameObjects(
-        VkCommandBuffer commandBuffer,
-        std::vector<LveGameObject>& gameObjects,
-        const LveCamera& camera);
+        LveFrameInfo& frameInfo,
+        std::vector<LveGameObject>& gameObjects);
 
 private:
 
