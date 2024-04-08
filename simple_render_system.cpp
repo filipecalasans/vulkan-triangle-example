@@ -14,7 +14,7 @@ namespace lve {
 
 struct SimplePushConstantData {
   glm::mat4 transform{1.0f};
-  alignas(16) glm::vec3 color;
+  glm::mat4 modelMatrix{1.f};
 };
 
 SimpleRenderSystem::SimpleRenderSystem(LveDevice& device, VkRenderPass renderPass) : lveDevice(device) {
@@ -65,9 +65,10 @@ void SimpleRenderSystem::renderGameObjects(
     auto projectionView = camera.getProjection() * camera.getView();
   
     for (auto& obj : gameObjects) {
+      auto modelMatrix = obj.transform.mat4();
       SimplePushConstantData push {
-        .color = obj.color,
-        .transform = projectionView * obj.transform.mat4(),
+        .transform = projectionView * modelMatrix,
+        .modelMatrix = modelMatrix, 
       };
       vkCmdPushConstants(
         commandBuffer,
