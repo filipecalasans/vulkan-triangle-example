@@ -32,11 +32,7 @@ class LveDevice {
     bool enableValidationLayers = true;
 #endif
 
-#ifdef LVE_ENABLE_PORTABILITY_EXTENSION
-    bool enablePortabilityExtension = true;
-#else
     bool enablePortabilityExtension = false;
-#endif
 
     LveDevice(LveNativeWindow &window);
     ~LveDevice();
@@ -110,12 +106,11 @@ class LveDevice {
     VkQueue presentQueue_;
 
     const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-    const std::vector<const char *> deviceExtensions = {
+    std::vector<const char *> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
-    #ifdef LVE_ENABLE_PORTABILITY_EXTENSION
-        , "VK_KHR_portability_subset"
-    #endif
     };
+
+    void detectPortabilitySupport();
 };
 
 } // namespace lve

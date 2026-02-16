@@ -51,6 +51,7 @@ void DestroyDebugUtilsMessengerEXT(
 
 // class member functions
 LveDevice::LveDevice(LveNativeWindow &window) : window{window} {
+  detectPortabilitySupport();
   createInstance();
   setupDebugMessenger();
   createSurface();
@@ -69,6 +70,38 @@ LveDevice::~LveDevice() {
 
   vkDestroySurfaceKHR(instance, surface_, nullptr);
   vkDestroyInstance(instance, nullptr);
+}
+
+/**
+ * Queries available Vulkan instance extensions at runtime to determine whether
+ * the VK_KHR_portability_subset extension is present. This extension is exposed
+ * by non-conformant Vulkan implementations (e.g. MoltenVK on macOS) that translate
+ * Vulkan calls to another graphics API.
+ *
+ * When detected, enables portability mode by:
+ *  - Setting enablePortabilityExtension so createInstance() adds the
+ *    VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR flag and the required
+ *    instance extensions (VK_KHR_portability_enumeration, VK_KHR_get_physical_device_properties2).
+ *  - Appending "VK_KHR_portability_subset" to deviceExtensions so it is
+ *    requested during logical device creation.
+ *
+ * Must be called before createInstance().
+ */
+void LveDevice::detectPortabilitySupport() {
+  constexpr char kPortabilityExtension[] = "VK_KHR_portability_subset";
+  uint32_t extensionCount = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+  std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());
+
+  for (const auto &ext : availableExtensions) {
+    if (strcmp(ext.extensionName, kPortabilityExtension) == 0) {
+      enablePortabilityExtension = true;
+      deviceExtensions.push_back(kPortabilityExtension);
+      std::cout << "Portability extension detected and enabled." << std::endl;
+      return;
+    }
+  }
 }
 
 void LveDevice::createInstance() {
@@ -109,9 +142,9 @@ void LveDevice::createInstance() {
     createInfo.pNext = nullptr;
   }
 
-#if (defined(LVE_ENABLE_PORTABILITY_EXTENSION))
-  createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-#endif
+  if (enablePortabilityExtension) {
+    createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+  }
 
   if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
     throw std::runtime_error("failed to create instance!");

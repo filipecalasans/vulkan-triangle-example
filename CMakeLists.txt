@@ -9,7 +9,6 @@ find_package(glm REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(LVE_ENABLE_PORTABILITY_EXTENSION "Enable Vulkan Portability Extension" OFF)
 option(LVE_USE_GLFW "Use GLW to interact with the native window system" OFF)
 
 # Create Exectuables and Libraries
@@ -42,10 +41,6 @@ target_include_directories(lve PRIVATE third_party)
 
 # Linked Libraries lve
 target_link_libraries(lve Vulkan::Vulkan tiny_obj_loader)
-
-if(LVE_ENABLE_PORTABILITY_EXTENSION)
-    target_compile_definitions(lve PUBLIC LVE_ENABLE_PORTABILITY_EXTENSION)
-endif(LVE_ENABLE_PORTABILITY_EXTENSION)
 
 if(LVE_USE_GLFW)
     find_package(glfw3 3.3 REQUIRED)

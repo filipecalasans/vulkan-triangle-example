@@ -7,11 +7,6 @@ mkdir -p "${BUILD_DIR}"
 
 CMAKE_FLAGS=()
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "MacOS identified. Enable Portability Extension." 
-    CMAKE_FLAGS+=("-DLVE_ENABLE_PORTABILITY_EXTENSION=ON")
-fi
-
 CMAKE_FLAGS+=("-DLVE_USE_GLFW=ON")
 
 source "${SCRIPT_DIR}/set-vulkan-env.sh"
