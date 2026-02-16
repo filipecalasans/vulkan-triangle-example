@@ -38,7 +38,6 @@ target_sources(tiny_obj_loader PRIVATE
     third_party/tinyobjloader/tiny_obj_loader.cc)
 
 # Includes lve
-target_include_directories(lve PUBLIC ${GLEW_INCLUDE_DIRS})
 target_include_directories(lve PUBLIC ${GLM_INCLUDE_DIRS})
 target_include_directories(lve PRIVATE third_party)
 
@@ -47,6 +46,7 @@ target_link_libraries(lve Vulkan::Vulkan tiny_obj_loader)
 
 if(LVE_USE_GLFW)
     find_package(glfw3 3.3 REQUIRED)
+    target_include_directories(lve PUBLIC ${GLFW_INCLUDE_DIRS})
     target_sources(
         lve PRIVATE 
         lve_window.cpp

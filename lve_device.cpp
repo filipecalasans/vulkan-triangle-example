@@ -150,7 +150,7 @@ void LveDevice::createInstance() {
     throw std::runtime_error("failed to create instance!");
   }
 
-  hasGflwRequiredInstanceExtensions();
+  hasRequiredInstanceExtensions();
 }
 
 void LveDevice::pickPhysicalDevice() {
@@ -343,7 +343,7 @@ std::vector<const char *> LveDevice::getRequiredExtensions() {
   return extensions;
 }
 
-void LveDevice::hasGflwRequiredInstanceExtensions() {
+void LveDevice::hasRequiredInstanceExtensions() {
   uint32_t extensionCount = 0;
   vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
   std::vector<VkExtensionProperties> extensions(extensionCount);
