@@ -208,6 +208,9 @@ void LveDevice::createCommandPool() {
 void LveDevice::createSurface() { window.createWindowSurface(instance, &surface_); }
 
 bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
+  VkPhysicalDeviceProperties deviceProperties;
+  vkGetPhysicalDeviceProperties(device, &deviceProperties);
+
   QueueFamilyIndices indices = findQueueFamilies(device);
 
   bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -221,8 +224,27 @@ bool LveDevice::isDeviceSuitable(VkPhysicalDevice device) {
   VkPhysicalDeviceFeatures supportedFeatures;
   vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
 
-  return indices.isComplete() && extensionsSupported && swapChainAdequate &&
+  const bool suitable = indices.isComplete() && extensionsSupported && swapChainAdequate &&
          supportedFeatures.samplerAnisotropy;
+
+  if (!suitable) {
+    std::cerr << "Device \"" << deviceProperties.deviceName << "\" is not suitable:";
+    if (!indices.isComplete()) {
+      std::cerr << " [missing required queue families]";
+    }
+    if (!extensionsSupported) {
+      std::cerr << " [missing required device extensions]";
+    }
+    if (!swapChainAdequate) {
+      std::cerr << " [inadequate swap chain support]";
+    }
+    if (!supportedFeatures.samplerAnisotropy) {
+      std::cerr << " [no sampler anisotropy support]";
+    }
+    std::cerr << std::endl;
+  }
+
+  return suitable;
 }
 
 void LveDevice::populateDebugMessengerCreateInfo(
