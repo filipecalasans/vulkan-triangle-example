@@ -2,6 +2,8 @@
 #define LVE_NATIVE_WINDOW
 
 #include <string>
+#include <vector>
+#include <cstdint>
 
 // vulkan headers
 #include <vulkan/vulkan.h>

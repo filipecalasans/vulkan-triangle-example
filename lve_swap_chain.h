@@ -9,6 +9,7 @@
 // std lib headers
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace lve {
 

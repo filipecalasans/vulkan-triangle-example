@@ -66,21 +66,21 @@ void LvePipeline::createGraphicsPipeline(
 
   shaderStages[0] = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    .pNext = nullptr,
+    .flags = 0,
     .stage = VK_SHADER_STAGE_VERTEX_BIT,
     .module = vertShaderModule,
     .pName = "main",
-    .flags = 0,
-    .pNext = nullptr,
     .pSpecializationInfo = nullptr,
   };
 
   shaderStages[1] = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+    .pNext = nullptr,
+    .flags = 0,
     .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
     .module = fragShaderModule,
     .pName = "main",
-    .flags = 0,
-    .pNext = nullptr,
     .pSpecializationInfo = nullptr,
   };
 
@@ -89,10 +89,10 @@ void LvePipeline::createGraphicsPipeline(
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo{
     .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-    .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
     .vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size()),
-    .pVertexAttributeDescriptions = attributeDescriptions.data(),
     .pVertexBindingDescriptions = bindingDescriptions.data(),
+    .vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size()),
+    .pVertexAttributeDescriptions = attributeDescriptions.data(),
   };
 
   VkGraphicsPipelineCreateInfo pipelineInfo{
@@ -104,16 +104,16 @@ void LvePipeline::createGraphicsPipeline(
     .pViewportState = &configInfo.viewportInfo,
     .pRasterizationState = &configInfo.rasterizationInfo,
     .pMultisampleState = &configInfo.multisampleInfo,
-    .pColorBlendState = &configInfo.colorBlendInfo,
     .pDepthStencilState = &configInfo.depthStencilInfo,
+    .pColorBlendState = &configInfo.colorBlendInfo,
     .pDynamicState = &configInfo.dynamicStateInfo,
     
     .layout = configInfo.pipelineLayout,
     .renderPass = configInfo.renderPass,
     .subpass = configInfo.subpass,
 
-    .basePipelineIndex = -1,
     .basePipelineHandle = VK_NULL_HANDLE,
+    .basePipelineIndex = -1,
   };
 
   if (vkCreateGraphicsPipelines(lveDevice.device(), VK_NULL_HANDLE, 
@@ -153,27 +153,24 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     .depthClampEnable = VK_FALSE,
     .rasterizerDiscardEnable = VK_FALSE,
     .polygonMode = VK_POLYGON_MODE_FILL,
-    .lineWidth = 1.0f,
     .cullMode = VK_CULL_MODE_NONE,
     .frontFace = VK_FRONT_FACE_CLOCKWISE,
     .depthBiasEnable = VK_FALSE,
     .depthBiasConstantFactor = 0.0f,  // Optional
     .depthBiasClamp = 0.0f,           // Optional
     .depthBiasSlopeFactor = 0.0f,     // Optional
+    .lineWidth = 1.0f,
   };
   configInfo.multisampleInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
-    .sampleShadingEnable = VK_FALSE,
     .rasterizationSamples = VK_SAMPLE_COUNT_1_BIT,
+    .sampleShadingEnable = VK_FALSE,
     .minSampleShading = 1.0f,           // Optional
     .pSampleMask = nullptr,             // Optional
     .alphaToCoverageEnable = VK_FALSE,  // Optional
     .alphaToOneEnable = VK_FALSE,       // Optional
   };
   configInfo.colorBlendAttachment = {
-    .colorWriteMask =
-      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-      VK_COLOR_COMPONENT_A_BIT,
     .blendEnable = VK_FALSE,
     .srcColorBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
     .dstColorBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
@@ -181,6 +178,9 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     .srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE,   // Optional
     .dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO,  // Optional
     .alphaBlendOp = VK_BLEND_OP_ADD,              // Optional
+    .colorWriteMask =
+      VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+      VK_COLOR_COMPONENT_A_BIT,
   };
   configInfo.depthStencilInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
@@ -188,11 +188,11 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     .depthWriteEnable = VK_TRUE,
     .depthCompareOp = VK_COMPARE_OP_LESS,
     .depthBoundsTestEnable = VK_FALSE,
-    .minDepthBounds = 0.0f,         // Optional
-    .maxDepthBounds = 1.0f,         // Optional
     .stencilTestEnable = VK_FALSE,
     .front = {},                    // Optional
     .back = {},                     // Optional
+    .minDepthBounds = 0.0f,         // Optional
+    .maxDepthBounds = 1.0f,         // Optional
   }; 
 
   configInfo.colorBlendInfo = {
@@ -201,28 +201,25 @@ void LvePipeline::defaultPipelineConfigInfo(PipelineConfigInfo& configInfo)
     .logicOp = VK_LOGIC_OP_COPY,  // Optional
     .attachmentCount = 1,
     .pAttachments = &configInfo.colorBlendAttachment,
-    .blendConstants[0] = 0.0f,  // Optional
-    .blendConstants[1] = 0.0f,  // Optional
-    .blendConstants[2] = 0.0f,  // Optional
-    .blendConstants[3] = 0.0f,  // Optional
+    .blendConstants = {0.0f, 0.0f, 0.0f, 0.0f},  // Optional
   };
 
   configInfo.viewportInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+    .pNext = nullptr,
+    .flags = 0,
     .viewportCount = 1,
     .pViewports = nullptr,
     .scissorCount = 1,
     .pScissors = nullptr,
-    .pNext = nullptr,
-    .flags = 0,
   };
 
   configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
   configInfo.dynamicStateInfo = {
     .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-    .pDynamicStates = configInfo.dynamicStateEnables.data(),
-    .dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size()),
     .flags = 0,
+    .dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size()),
+    .pDynamicStates = configInfo.dynamicStateEnables.data(),
   };
 }
 
