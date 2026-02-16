@@ -1,3 +1,4 @@
 build/
+.llm/
 .vscode/
 workspace.code-workspace
