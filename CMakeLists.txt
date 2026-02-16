@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 project(little_vulkan C CXX)
 enable_testing()
 
+include(cmake/utils.cmake)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Vulkan REQUIRED COMPONENTS glslc)
@@ -50,6 +52,12 @@ if(LVE_USE_GLFW)
     target_compile_definitions(lve PUBLIC GLFW_XPLAT_DESKTOP)
     target_link_libraries(lve glfw)
 endif(LVE_USE_GLFW)
+
+target_compile_shaders(lve
+      SOURCES
+        shaders/simple_shader.vert
+        shaders/simple_shader.frag
+  )
 
 add_custom_command(
   TARGET lve POST_BUILD
