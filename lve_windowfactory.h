@@ -19,7 +19,7 @@ std::unique_ptr<LveNativeWindow> createNativeWindow(int w, int h, std::string na
         #error "Window System Not Defined!"
     #endif
     return nullptr;
-} 
+}
 
 }
 

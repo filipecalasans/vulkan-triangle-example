@@ -30,6 +30,7 @@ target_sources(lve PRIVATE
     lve_swap_chain.cpp
     simple_render_system.cpp
     lve_buffer.cpp
+    lve_input_source.cpp
 )
 
 # Source Files tinyobjloader
@@ -47,7 +48,9 @@ target_link_libraries(lve Vulkan::Vulkan tiny_obj_loader)
 if(LVE_USE_GLFW)
     find_package(glfw3 3.3 REQUIRED)
     target_sources(
-        lve PRIVATE lve_window.cpp
+        lve PRIVATE 
+        lve_window.cpp
+        lve_glfw_input_source.cpp
     )
     target_compile_definitions(lve PUBLIC GLFW_XPLAT_DESKTOP)
     target_link_libraries(lve glfw)

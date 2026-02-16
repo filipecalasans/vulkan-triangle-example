@@ -34,11 +34,8 @@ private:
     void loadGameObjects();
     void createSyncObjects();
 
-    std::unique_ptr<LveNativeWindow> lveWindow; //{WIDTH, HEIGHT, "Hello Vulkan"};
-    
-    // LveDevice lveDevice{lveWindow};
-    // LveRenderer lveRenderer{lveWindow, lveDevice};
-
+    std::unique_ptr<LveNativeWindow> lveWindow;
+    std::unique_ptr<LveInputSource> lveInputSource;
     LveDevice lveDevice;
     LveRenderer lveRenderer;
  

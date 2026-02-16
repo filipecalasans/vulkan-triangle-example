@@ -1,14 +1,17 @@
 #ifndef LVE_NATIVE_WINDOW
 #define LVE_NATIVE_WINDOW
 
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 // vulkan headers
 #include <vulkan/vulkan.h>
 
 namespace lve {
+
+class LveInputSource;
 
 class LveNativeWindow {
 
@@ -24,11 +27,13 @@ public:
     virtual bool shouldClose() = 0;
     virtual void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) = 0;
     virtual void waitForEvents() = 0;
+    virtual std::unique_ptr<LveInputSource> createInputSource() = 0;
 
     VkExtent2D getExtent() { return {static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}; }
     bool resized() const { return frameBufferResized; }
     void resetResized() { frameBufferResized = false; }
     void* getNativeWindow() const { return window; }
+    
 
 protected:
 
@@ -37,7 +42,7 @@ protected:
     bool frameBufferResized = false;
 
     std::string windowName;
-    void* window;
+    void* window = nullptr;
 };
 
 }

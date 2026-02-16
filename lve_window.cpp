@@ -1,8 +1,11 @@
 #include "lve_window.h"
 
 //std
+#include <memory>
 #include <stdexcept>
 #include <vector>
+
+#include "lve_glfw_input_source.h"
 
 namespace lve {
 
@@ -24,6 +27,10 @@ void LveWindow::initWindow() {
     window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(GLFW_WINDOW(window), this);
     glfwSetFramebufferSizeCallback(GLFW_WINDOW(window), framebufferResizeCallback);
+}
+
+std::unique_ptr<LveInputSource> LveWindow::createInputSource() {
+    return std::make_unique<LveGlfwInputSource>(*this);
 }
 
 std::vector<const char *> LveWindow::getRequiredExtensions() {
@@ -55,5 +62,6 @@ void LveWindow::framebufferResizeCallback(GLFWwindow* window, int width, int hei
     lveWindow->width = width;
     lveWindow->height = height;
 }
+
 
 } // namesapce lve

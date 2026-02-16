@@ -6,6 +6,7 @@
 #include "simple_render_system.h"
 #include "lve_windowfactory.h"
 #include "lve_buffer.h"
+#include "lve_input_source.h"
 
 // libs
 #define GLM_FORCE_RADIANS
@@ -29,6 +30,7 @@ struct GlobalUbo {
 
 FirstApp::FirstApp() :
   lveWindow(createNativeWindow(WIDTH, HEIGHT, "Hellp Vulkan")),
+  lveInputSource(lveWindow->createInputSource()),
   lveDevice(*lveWindow),
   lveRenderer(*lveWindow, lveDevice) {
   loadGameObjects();
@@ -56,14 +58,14 @@ void FirstApp::run() {
 
   auto currentTime = std::chrono::high_resolution_clock::now();
   while (!lveWindow->shouldClose()) {
-    glfwPollEvents();
+    lveInputSource->pollEvents();
 
     auto newTime = std::chrono::high_resolution_clock::now();
     auto frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
     currentTime = newTime;
 
     // TODO: Make input cross platform.
-    cameraController.moveInPlaneXZ(reinterpret_cast<GLFWwindow*>(lveWindow->getNativeWindow()), frameTime, viewerObject);
+    cameraController.moveInPlaneXZ(*lveInputSource, frameTime, viewerObject);
     camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
 
     float aspect = lveRenderer.getAspectRatio();

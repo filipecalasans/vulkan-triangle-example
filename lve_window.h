@@ -10,6 +10,8 @@
 
 namespace lve {
 
+class LveInputSource;
+
 class LveWindow : public LveNativeWindow {
 
 public:
@@ -24,11 +26,11 @@ public:
     bool shouldClose() override;
     void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) override;
     void waitForEvents() override;
-    
+    std::unique_ptr<LveInputSource> createInputSource() override;
+
 private:
 
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
-
     void initWindow();
 };
 
